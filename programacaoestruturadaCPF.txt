@@ -1,0 +1,113 @@
+
+DECLARE @cpf VARCHAR(11) 
+SET @cpf = 41014044880
+
+DECLARE @d1input INT
+SET @d1input = CAST (substring(@cpf, 10, 1) AS INT)
+
+DECLARE @d2input INT
+SET @d2input = CAST (substring(@cpf, 11, 1) AS INT)
+
+DECLARE @v1 BIT
+SET @v1 = 0
+
+DECLARE @v2 BIT
+SET @v2 = 0
+
+DECLARE @digitosIguais BIT
+SET @digitosIguais = 1
+
+DECLARE @d1logico INT
+DECLARE @d2logico INT
+DECLARE @mod INT
+DECLARE @i INT
+DECLARE @s INT
+
+SET @i = 0
+SET @s = 0
+
+WHILE @i < 9
+BEGIN
+	DECLARE @m1 INT
+	SET @m1 = 10 - @i
+	
+	DECLARE @c1 INT
+	SET @c1 = CAST (substring(@cpf, @i+1, 1) AS INT)
+
+	DECLARE @cc1 INT
+	SET @cc1 = CAST (substring(@cpf, @i+2, 1) AS INT)
+	
+	IF @c1 - @cc1 != 0
+	BEGIN
+		SET @digitosIguais = 0
+	END
+
+	SET @s = @s + @m1 * @c1
+	SET @i = @i + 1
+END
+
+SET @mod = @s % 11
+
+IF @mod < 2
+BEGIN
+	SET @d1logico = 0
+END
+ELSE
+BEGIN
+	SET @d1logico = 11 - @mod
+END
+
+SET @mod = 0
+SET @i = 0
+SET @s = 0
+
+WHILE @i < 9
+BEGIN
+	DECLARE @m2 INT
+	SET @m2 = 11 - @i
+	
+	DECLARE @c2 INT
+	SET @c2 = CAST (substring(@cpf, @i+1, 1) AS INT)
+
+	SET @s = @s + @m2 * @c2
+	SET @i = @i + 1
+END
+
+SET @s = @s + 2 * @d1logico
+
+SET @mod = @s % 11
+
+IF @mod < 2
+BEGIN
+	SET @d2logico = 0
+END
+ELSE
+BEGIN
+	SET @d2logico = 11 - @mod
+END
+
+IF @d1input = @d1logico
+BEGIN
+	SET @v1 = 1
+END
+
+IF @d2input = @d2logico
+BEGIN
+	SET @v2 = 1
+END
+
+IF @digitosIguais = 1
+BEGIN
+	SET @v1 = 0
+	SET @v2 = 0
+END
+
+PRINT ('CPF: ' + @cpf + '.')
+IF (@v1 = 1 AND @v2 = 1)
+BEGIN
+	PRINT ('Este CPF e valido.')
+END
+ELSE
+BEGIN
+	PRINT ('Este CPF nao e valido.')
+END
