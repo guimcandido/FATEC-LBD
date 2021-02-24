@@ -1,6 +1,5 @@
-
 DECLARE @cpf VARCHAR(11) 
-SET @cpf = 41014044880
+SET @cpf = 12312312312
 
 DECLARE @d1input INT
 SET @d1input = CAST (substring(@cpf, 10, 1) AS INT)
