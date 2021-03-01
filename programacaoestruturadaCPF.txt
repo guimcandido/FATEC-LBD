@@ -73,7 +73,6 @@ BEGIN
 END
 
 SET @s = @s + 2 * @d1logico
-
 SET @mod = @s % 11
 
 IF @mod < 2
