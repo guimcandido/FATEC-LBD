@@ -1,0 +1,158 @@
+CREATE DATABASE academia
+GO
+USE academia
+
+CREATE TABLE aluno (
+codigo_aluno	INT		NOT NULL,
+nome		VARCHAR(80)	NOT NULL
+PRIMARY KEY (codigo_aluno)
+)
+
+CREATE TABLE atividade (
+codigo_atividade	INT		NOT NULL,
+descricao		VARCHAR(80)	NOT NULL,
+imc		FLOAT		NOT NULL,
+PRIMARY KEY (codigo_atividade)
+)
+
+CREATE TABLE atividades_aluno (
+codigo_aluno	INT	NOT NULL,
+codigo_atividade	INT	NOT NULL,
+altura		FLOAT	NOT NULL,
+peso		FLOAT	NOT NULL,
+imc		FLOAT	NOT NULL
+)
+
+INSERT INTO atividade VALUES (1, 'Corrida + Step', 18.5)
+INSERT INTO atividade VALUES (2, 'Biceps + Costas + Pernas', 24.9)
+INSERT INTO atividade VALUES (3, 'Esteira + Biceps + Costas + Pernas', 29.9)
+INSERT INTO atividade VALUES (4, 'Bicicleta + Biceps + Costas + Pernas', 34.9)
+INSERT INTO atividade VALUES (5, 'Esteira + Bicicleta', 39.9)
+
+INSERT INTO aluno VALUES (1, 'Abreu')
+INSERT INTO aluno VALUES (2, 'Bianca')
+INSERT INTO aluno VALUES (3, 'Cassio')
+INSERT INTO aluno VALUES (4, 'Deise')
+INSERT INTO aluno VALUES (5, 'Everton')
+INSERT INTO aluno VALUES (6, 'Fernanda')
+
+
+CREATE DATABASE academia
+GO
+USE academia
+
+CREATE TABLE aluno (
+codigo_aluno	INT		NOT NULL,
+nome		VARCHAR(80)	NOT NULL
+PRIMARY KEY (codigo_aluno)
+)
+
+CREATE TABLE atividade (
+codigo_atividade	INT		NOT NULL,
+descricao		VARCHAR(80)	NOT NULL,
+imc		FLOAT		NOT NULL,
+PRIMARY KEY (codigo_atividade)
+)
+
+CREATE TABLE atividades_aluno (
+codigo_aluno	INT	NOT NULL,
+codigo_atividade	INT	NOT NULL,
+altura		FLOAT	NOT NULL,
+peso		FLOAT	NOT NULL,
+imc		FLOAT	NOT NULL
+)
+
+INSERT INTO atividade VALUES (1, 'Corrida + Step', 18.5)
+INSERT INTO atividade VALUES (2, 'Biceps + Costas + Pernas', 24.9)
+INSERT INTO atividade VALUES (3, 'Esteira + Biceps + Costas + Pernas', 29.9)
+INSERT INTO atividade VALUES (4, 'Bicicleta + Biceps + Costas + Pernas', 34.9)
+INSERT INTO atividade VALUES (5, 'Esteira + Bicicleta', 39.9)
+
+INSERT INTO aluno VALUES (1, 'Abreu')
+INSERT INTO aluno VALUES (2, 'Bianca')
+INSERT INTO aluno VALUES (3, 'Cassio')
+INSERT INTO aluno VALUES (4, 'Deise')
+INSERT INTO aluno VALUES (5, 'Everton')
+INSERT INTO aluno VALUES (6, 'Fernanda')
+
+CREATE PROCEDURE sp_prox_cod_aluno(@cod INT OUTPUT)
+AS
+DECLARE @count INT
+SET @count = (SELECT COUNT(*) FROM aluno)
+IF (@count = 0)
+BEGIN
+	SET @cod = 1
+END
+ELSE
+BEGIN
+	SET @cod = (SELECT MAX(codigo_aluno) FROM aluno) + 1
+END
+
+CREATE PROCEDURE sp_prox_cod_aluno(@cod INT OUTPUT)
+AS
+DECLARE @count INT
+SET @count = (SELECT COUNT(*) FROM aluno)
+IF (@count = 0)
+BEGIN
+	SET @cod = 1
+END
+ELSE
+BEGIN
+	SET @cod = (SELECT MAX(codigo_aluno) FROM aluno) + 1
+END
+
+
+CREATE PROCEDURE sp_imc(@peso FLOAT, @altura FLOAT, @imc FLOAT OUTPUT)
+AS
+SET @imc = @peso / (@altura * @altura)
+
+CREATE PROCEDURE sp_imc(@peso FLOAT, @altura FLOAT, @imc FLOAT OUTPUT)
+AS
+	SET @imc = @peso / (@altura * @altura)
+
+CREATE PROCEDURE sp_alunoatividades (@codigo_aluno INT, @nome VARCHAR (80), @altura FLOAT, @peso FLOAT, @saida VARCHAR(MAX) OUTPUT)
+AS
+SET @saida = 'Sem saída.'
+
+DECLARE @imc FLOAT
+EXEC sp_imc @peso, @altura, @imc OUTPUT
+
+IF (@codigo_atividade IS NULL)
+BEGIN
+	SET @saida = 'Informe o codigo da atividade.'
+END
+ELSE
+BEGIN
+	IF (@codigo_aluno IS NULL)
+	BEGIN
+		IF (@nome IS NULL OR @altura IS NULL OR @peso IS NULL)
+		BEGIN
+			SET @saida = 'Informe o codigo do aluno ou nome, altura e peso.'
+		END
+	ELSE
+	BEGIN
+		DECLARE @prox_cod INT
+		EXEC sp_prox_cod_aluno @prox_cod OUTPUT
+		INSERT INTO aluno VALUES (@prox_cod, @nome)
+		SET @codigo_aluno = @prox_cod
+	END
+END
+ELSE
+BEGIN
+--	IF (SELECT codigo_aluno FROM aluno WHERE codigo_aluno = @codigo_aluno)
+	BEGIN
+		IF (@altura IS NULL OR @peso IS NULL)
+		BEGIN
+			SET @saida = 'Informe a altura e o peso do aluno.'
+		END
+		ELSE
+		BEGIN
+			UPDATE altura, peso FROM aluno WHERE codigo_aluno = @codigo_aluno
+		END
+	END
+END
+
+DECLARE @cod_ativ INT
+EXEC sp_atividade_recomendada @imc, @ cod_ativ OUTPUT
+INSERT INTO atividades_aluno VALUES (@codigo_aluno, @cod_ativ, @altura, @peso, @imc)
+END
