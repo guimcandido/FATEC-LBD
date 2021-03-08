@@ -88,20 +88,6 @@ BEGIN
 	SET @cod = (SELECT MAX(codigo_aluno) FROM aluno) + 1
 END
 
-CREATE PROCEDURE sp_prox_cod_aluno(@cod INT OUTPUT)
-AS
-DECLARE @count INT
-SET @count = (SELECT COUNT(*) FROM aluno)
-IF (@count = 0)
-BEGIN
-	SET @cod = 1
-END
-ELSE
-BEGIN
-	SET @cod = (SELECT MAX(codigo_aluno) FROM aluno) + 1
-END
-
-
 CREATE PROCEDURE sp_imc(@peso FLOAT, @altura FLOAT, @imc FLOAT OUTPUT)
 AS
 SET @imc = @peso / (@altura * @altura)
